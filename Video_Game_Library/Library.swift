@@ -133,7 +133,7 @@ class Library {
         } while index == nil
         
         availableGames[index!].checkedIn = false
-        NSKeyedArchiver.archiveRootObject(availableGames, toFile: filePath)
+        NSKeyedArchiver.archiveRootObject(games, toFile: filePath)
         print("\n You checked out: \(availableGames[index!].title)\n")
         let currentCalendar = Calendar.current
         let dueDate = currentCalendar.date(byAdding: .day, value: 14, to: Date())
@@ -186,7 +186,7 @@ class Library {
         } while index == nil
         
         unavailableGames[index!].checkedIn = true
-        NSKeyedArchiver.archiveRootObject(unavailableGames, toFile: filePath)
+        NSKeyedArchiver.archiveRootObject(games, toFile: filePath)
         unavailableGames[index!].dueDate = nil
         print("Thank you for checking in \(unavailableGames[index!].title) \n")
     }
