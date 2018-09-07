@@ -20,22 +20,28 @@ class Game: NSObject, NSCoding {
     //This is optional because if a game isn't checked out, it shouldn't have a due date.
     var dueDate: Date?
     
+    var rating: String
+   
+    
     
     //Since checkedIn is a default value, and dueDate is an optional, the only value we have to initialize is the title.
-    init(title: String) {
+    init(title: String, rating: String) {
         self.title = title
+        self.rating = rating
     }
     
-    init(title: String, checkedIn: Bool, dueDate: Date?) {
+    init(title: String, checkedIn: Bool, dueDate: Date?, rating: String) {
         self.title = title
         self.checkedIn = checkedIn
         self.dueDate = dueDate
+        self.rating = rating
     }
     
     func encode(with aCoder: NSCoder) {
         aCoder.encode(title, forKey: "title")
         aCoder.encode(checkedIn, forKey: "checkedIn")
         aCoder.encode(dueDate, forKey: "dueDate")
+        aCoder.encode(rating, forKey: "rating")
     }
     
     convenience required init?(coder aDecoder: NSCoder) {
@@ -47,10 +53,15 @@ class Game: NSObject, NSCoding {
         
         let checkedIn = aDecoder.decodeBool(forKey: "checkedIn")
         
+        guard let rating = aDecoder.decodeObject(forKey: "rating") as? String
+            else {
+                return nil
+        }
+        
         if let dueDate = aDecoder.decodeObject(forKey: "dueDate") as? Date {
-            self.init(title: title, checkedIn: checkedIn, dueDate: dueDate)
+            self.init(title: title, checkedIn: checkedIn, dueDate: dueDate, rating: rating)
         } else {
-            self.init(title: title, checkedIn: checkedIn, dueDate: nil)
+            self.init(title: title, checkedIn: checkedIn, dueDate: nil, rating: rating)
         }
     }
 }

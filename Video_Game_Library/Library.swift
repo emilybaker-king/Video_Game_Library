@@ -35,8 +35,21 @@ class Library {
         //We need to be able to get user input for the title.
         //We need to create a new game object using that title.
         //We need to add the new game to out gameArray.
+        print("Password:")
+        var input: String? = nil
+        repeat {
+            let line = readLine()!.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if line == "password" {
+                input = line
+            } else {
+                print("Invalid password")
+            }
+        } while input == nil
+        
+        
         var gameTitle: String? = nil
-        print("Please list game you wish to add to library:")
+        print("Please enter the game you want to add:")
         repeat {
             let line = readLine()!
             
@@ -45,17 +58,43 @@ class Library {
             } else {
                 print("Invalid input")
             }
-            break
         } while gameTitle == nil
-        games.append(Game(title: gameTitle!))
+        
+        var gameRating: String? = nil
+        print("Please enter the rating of the game you added: E, T, or M")
+        repeat {
+            let line = readLine()!.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if line == "E" || line == "T" || line == "M" {
+                gameRating = line
+            } else {
+                print("Invalid input")
+                input = nil
+            }
+        } while gameRating == nil
+        
+        games.append(Game(title: gameTitle!, rating: gameRating!))
         NSKeyedArchiver.archiveRootObject(games, toFile: filePath)
         print("\n")
         print("The new library is:")
         for game in games {
-            print(game.title)
+            print("\(game.title) : \(game.rating)")
         }
-        print("\n")
     }
+    
+    
+    func getAge() -> Int? {
+        print("How old are you?")
+        if let age = Int(readLine()!) {
+            return age
+        }
+        else{
+            return nil
+        }
+    }
+    
+    
+    
     
     func removeGame() {
         for index in 0..<games.count {
@@ -67,6 +106,8 @@ class Library {
             print("Invalid input. Please enter a usable index")
             userInput = Int(readLine()!)
         }
+
+        
         print("\n")
         games.remove(at: userInput!)
         NSKeyedArchiver.archiveRootObject(games, toFile: filePath)
@@ -76,15 +117,14 @@ class Library {
     func listAvailableGames() {
         print("The availble games are:")
         for game in getAvailableGames() {
-           print(game.title)
+            print("\(game.title) : \(game.rating)")
         }
-        print("\n")
     }
     
     func listUnavailableGames() {
         print("The following games are unavailable:")
         for game in getUnavailableGames() {
-            print(game.title)
+            print("\(game.title) : \(game.rating)")
         }
         print("\n")
     }
@@ -102,9 +142,34 @@ class Library {
     }
     
     
+    
     func checkGameOut() {
         let availableGames = getAvailableGames()
-        
+        //////
+        if let age = getAge() {
+            if age >= 18 {
+                for (n, game) in games.enumerated() {
+                    print("\(n). \(game.title)")
+                }
+            }
+            else if age >= 13 {
+                for (n, game) in games.enumerated() {
+                    if game.rating != "M" {
+                        print("\(n). \(game.title)")
+                    }
+                }
+            }
+            else {
+                for (n, game) in games.enumerated() {
+                    if game.rating != "M" && game.rating != "T" {
+                        print("\(n). \(game.title)")
+                    }
+                }
+            }
+        } else {
+            print("You didn't put in an age.")
+        }
+        //////
         print("What game do you want to check out?")
         
         for index in 0..<availableGames.count {
