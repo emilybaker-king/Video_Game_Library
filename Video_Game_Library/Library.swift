@@ -141,42 +141,39 @@ class Library {
         return availableGames
     }
     
-    
-    
     func checkGameOut() {
         let availableGames = getAvailableGames()
+        
+        // New array for games in rating.
+        var gamesInRating = [Game]()
+        
         //////
-        if let age = getAge() {
-            if age >= 18 {
-                for (n, game) in games.enumerated() {
-                    print("\(n). \(game.title)")
-                }
-            }
-            else if age >= 13 {
-                for (n, game) in games.enumerated() {
-                    if game.rating != "M" {
-                        print("\(n). \(game.title)")
-                    }
-                }
-            }
-            else {
-                for (n, game) in games.enumerated() {
-                    if game.rating != "M" && game.rating != "T" {
-                        print("\(n). \(game.title)")
-                    }
-                }
-            }
-        } else {
+        
+        guard let age = getAge() else {
             print("You didn't put in an age.")
+            return
         }
+        
+        for game in availableGames {
+            if age >= 18 {
+                gamesInRating.append(game)
+            } else if age >= 13 {
+                if game.rating != "M" {
+                    gamesInRating.append(game)
+                }
+            } else {
+                if game.rating != "T" && game.rating != "M" {
+                    gamesInRating.append(game)
+                }
+            }
+        }
+        
+        for (n, game) in gamesInRating.enumerated() {
+            print("\(n). \(game.title)")
+        }
+        
         //////
         print("What game do you want to check out?")
-        
-        for index in 0..<availableGames.count {
-            print("\(index). \(availableGames[index].title)")
-        }
-        
-        print("\n")
         
         print("Please enter the number of the game you wish to check out:")
         
@@ -190,19 +187,25 @@ class Library {
                 userInput = Int(readLine()!)
             }
             
-            if userInput! >= 0 && userInput! < availableGames.count {
+            if userInput! >= 0 && userInput! < gamesInRating.count {
                 index = userInput!
             } else {
                 print("Invalid input, please type a number on the list.")
             }
         } while index == nil
         
-        availableGames[index!].checkedIn = false
+        let game = gamesInRating[index!]
+        
+        game.checkedIn = false
+        
         NSKeyedArchiver.archiveRootObject(games, toFile: filePath)
-        print("\n You checked out: \(availableGames[index!].title)\n")
+        print("\n You checked out: \(game.title)\n")
+        
         let currentCalendar = Calendar.current
         let dueDate = currentCalendar.date(byAdding: .day, value: 14, to: Date())
-        availableGames[index!].dueDate = dueDate
+        
+        game.dueDate = dueDate
+        
         if let dueDate = dueDate {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "MMM dd, yyyy hh:mma"

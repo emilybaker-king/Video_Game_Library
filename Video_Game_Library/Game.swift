@@ -21,6 +21,8 @@ class Game: NSObject, NSCoding {
     var dueDate: Date?
     
     var rating: String
+    
+    
    
     
     
